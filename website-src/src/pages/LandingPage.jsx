@@ -171,50 +171,45 @@ function FeaturedSkills({ skills }) {
   );
 }
 
-/* ─── What's New (v2.21) ───────────────────────────────────────────── */
+/* ─── What's New (v2.22.0) ─────────────────────────────────────────── */
 
 function WhatsNew() {
   const highlights = [
     {
       tag: "New",
-      head: "One standard for creating and improving skills",
-      body: "skill-creator 2 absorbs skill-auto-improver, so a new skill and an updated skill clear the same authoring checks and the same asm eval bar.",
-    },
-    {
-      tag: "Improved",
-      head: "Reviews that confirm understanding",
-      body: "The skill-creator eval viewer asks the four understanding questions for every run and saves the answers, and the grader checks them instead of surface compliance.",
-    },
-    {
-      tag: "Growing",
-      head: "675 more skills in the catalog",
-      body: "google/mantis, anthropics/financial-services, Tencent/BrowserSkill, and typesafe-ai/skills join the index, which now lists 6,790 skills from 81 repos.",
+      head: "Find installed skills without the exact name",
+      body: "Opt in with asm search <query> --fuzzy to match partial names and descriptions, see the best matches and their locations, or add --root <dir> to include projects up to five levels below that folder.",
     },
     {
       tag: "Fixed",
-      head: "Bundled skills meet the standard",
-      body: "refresh-index, skill-index-updater, skill-install-improved, and find-me-skills now lead with the result, ship evals, and fix workflow bugs found in review.",
+      head: "Fresh pages after website updates",
+      body: "Website pages and catalog data refresh after updates instead of showing stale cached versions. Cached content is still available when offline.",
+    },
+    {
+      tag: "Fixed",
+      head: "Updated previews for shared links",
+      body: "The website preview image now shows 6,700+ skills, 80+ repositories, and 16 categories once the social platform refreshes its cached preview.",
     },
   ];
   return (
     <Reveal
       as="section"
       className="flex flex-col gap-8"
-      aria-label="What's new in v2.21"
+      aria-label="What's new in v2.22.0"
     >
       <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div className="flex flex-col gap-3 max-w-[680px]">
           <span className="lp-kicker">
             <span className="dot" aria-hidden="true" />
-            what&apos;s new · v2.21
+            what&apos;s new · v2.22.0
           </span>
           <h2 className="lp-section-title">
-            One skill standard, reviewable outputs, and a bigger catalog.
+            Find installed skills. Get fresh website pages.
           </h2>
           <p className="lp-lede">
-            v2.21 merges skill-auto-improver into skill-creator, records human
-            understanding checks during skill reviews, and adds four new sources
-            to the curated index.
+            v2.22.0 adds opt-in fuzzy search for installed skills in the CLI,
+            refreshes cached website pages after updates, and updates the
+            preview image for shared links.
           </p>
         </div>
         <Link
@@ -504,6 +499,11 @@ function Solution() {
       icon: "06",
       head: "Two interfaces, one tool",
       body: "A full interactive TUI with keyboard navigation and detail views — or the CLI with --json for scripting, CI, and automation. The companion site adds a Stats dashboard with repo rankings, author profiles, and category charts.",
+    },
+    {
+      icon: "07",
+      head: "Find installed skills by name or purpose",
+      body: "Opt in with asm search <query> --fuzzy to rank installed skills by partial names and descriptions, with their tool and location. Add --root <dir> to include projects up to five levels below a folder you choose.",
     },
   ];
   return (

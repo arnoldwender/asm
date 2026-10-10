@@ -88,36 +88,38 @@ Each view is an ink/React component:
 
 ## Core Modules
 
-| Module              | File                                 | Responsibility                                                                                                         |
-| ------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| Config              | `config.ts`                          | Load/save config from `~/.config/agent-skill-manager/config.json`                                                      |
-| Scanner             | `scanner.ts`                         | Walk provider directories, parse SKILL.md frontmatter, filter & sort                                                   |
-| Auditor             | `auditor.ts`                         | Detect duplicate skills, rank instances for keeping, format reports                                                    |
-| Overlap Detector    | `installed-overlap.ts`               | `asm audit overlap` — different-name skills doing the same job (offline)                                               |
-| Uninstaller         | `uninstaller.ts`                     | Build removal plans and execute safe deletions                                                                         |
-| Formatter           | `formatter.ts` + `formatter-core.ts` | CLI output formatting; core splits into `formatter-colors.ts`, `formatter-table.ts`, `formatter-search.ts`             |
-| Eval                | `eval/`                              | Pluggable skill evaluation framework (see below)                                                                       |
-| Initializer         | `initializer.ts`                     | Scaffold a new skill directory (`asm init`)                                                                            |
-| Linker              | `linker.ts`                          | Symlink-based live-reload installs (`asm link`)                                                                        |
-| Installer           | `installer.ts`                       | Resolve + fetch + place skills from GitHub/registry/local sources (`asm install`)                                      |
-| Registry            | `registry.ts`                        | ASM Registry manifest resolution and commit pinning                                                                    |
-| Publisher           | `publisher.ts`                       | `asm publish` — dry-run manifest + PR flow to the registry                                                             |
-| Skill Index         | `skill-index.ts` / `ingester.ts`     | Catalog ingestion, search, and `asm index` subcommands                                                                 |
-| Repo Bundles        | `repo-bundles.ts`                    | Bundle inference/records derived from indexed repos                                                                    |
-| Library             | `library.ts`                         | Local library lifecycle (`install --library`, `activate`, `deactivate`)                                                |
-| Skill State         | `skill-state.ts`                     | Disable/enable state persisted to `skill-state.json`                                                                   |
-| Skill Tags          | `skill-tags.ts`                      | Local tag overlays (`asm tag add\|remove`) and `--tag` AND filters                                                     |
-| Importer / Exporter | `importer.ts` / `exporter.ts`        | `asm import` / `asm export`                                                                                            |
-| Updater             | `updater.ts`                         | `asm update` / `asm outdated`                                                                                          |
-| Doctor              | `doctor.ts`                          | `asm doctor` environment/PATH-shadowing diagnostics                                                                    |
-| Health              | `health.ts`                          | Skill health checks surfaced in `list`/`inspect`                                                                       |
-| Skill Dedupe        | `skill-dedupe.ts`                    | Shared dedup logic used by `auditor.ts` and index ingestion                                                            |
-| Stats               | `stats.ts`                           | `asm stats` / `stats repo` / `stats author` / `stats index`; splits into `stats-tokens.ts`, `stats-index.ts`           |
-| Verifier            | `verifier.ts`                        | Catalog skill verification badge criteria                                                                              |
-| Security Auditor    | `security-auditor.ts`                | `asm audit security` — pre-install risk scanning; splits into `security-auditor-scan.ts`, `security-auditor-report.ts` |
-| Dependency Leases   | `dependency-leases.ts`               | Cross-session dependency borrow/lease ops; lock+session store in `dependency-leases-store.ts`                          |
-| Logger              | `logger.ts`                          | Shared structured logging                                                                                              |
-| Acknowledgements    | `website/data/acknowledgements.json` | Contributors/dependencies data for README/website                                                                      |
+| Module              | File                                 | Responsibility                                                                                                                                       |
+| ------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Config              | `config.ts`                          | Load/save config from `~/.config/agent-skill-manager/config.json`                                                                                    |
+| Scanner             | `scanner.ts`                         | Walk provider directories, parse SKILL.md frontmatter, filter & sort                                                                                 |
+| Skill Locator       | `skill-locator.ts`                   | Locate installed skills in enabled tools' global directories and global custom paths; an explicit root adds project discovery up to five levels deep |
+| Fuzzy Scoring       | `fuzzy-score.ts`                     | Rank installed skills by partial or misspelled names and description keywords for opt-in CLI search                                                  |
+| Auditor             | `auditor.ts`                         | Detect duplicate skills, rank instances for keeping, format reports                                                                                  |
+| Overlap Detector    | `installed-overlap.ts`               | `asm audit overlap` — different-name skills doing the same job (offline)                                                                             |
+| Uninstaller         | `uninstaller.ts`                     | Build removal plans and execute safe deletions                                                                                                       |
+| Formatter           | `formatter.ts` + `formatter-core.ts` | CLI output formatting; core splits into `formatter-colors.ts`, `formatter-table.ts`, `formatter-search.ts`                                           |
+| Eval                | `eval/`                              | Pluggable skill evaluation framework (see below)                                                                                                     |
+| Initializer         | `initializer.ts`                     | Scaffold a new skill directory (`asm init`)                                                                                                          |
+| Linker              | `linker.ts`                          | Symlink-based live-reload installs (`asm link`)                                                                                                      |
+| Installer           | `installer.ts`                       | Resolve + fetch + place skills from GitHub/registry/local sources (`asm install`)                                                                    |
+| Registry            | `registry.ts`                        | ASM Registry manifest resolution and commit pinning                                                                                                  |
+| Publisher           | `publisher.ts`                       | `asm publish` — dry-run manifest + PR flow to the registry                                                                                           |
+| Skill Index         | `skill-index.ts` / `ingester.ts`     | Catalog ingestion, search, and `asm index` subcommands                                                                                               |
+| Repo Bundles        | `repo-bundles.ts`                    | Bundle inference/records derived from indexed repos                                                                                                  |
+| Library             | `library.ts`                         | Local library lifecycle (`install --library`, `activate`, `deactivate`)                                                                              |
+| Skill State         | `skill-state.ts`                     | Disable/enable state persisted to `skill-state.json`                                                                                                 |
+| Skill Tags          | `skill-tags.ts`                      | Local tag overlays (`asm tag add\|remove`) and `--tag` AND filters                                                                                   |
+| Importer / Exporter | `importer.ts` / `exporter.ts`        | `asm import` / `asm export`                                                                                                                          |
+| Updater             | `updater.ts`                         | `asm update` / `asm outdated`                                                                                                                        |
+| Doctor              | `doctor.ts`                          | `asm doctor` environment/PATH-shadowing diagnostics                                                                                                  |
+| Health              | `health.ts`                          | Skill health checks surfaced in `list`/`inspect`                                                                                                     |
+| Skill Dedupe        | `skill-dedupe.ts`                    | Shared dedup logic used by `auditor.ts` and index ingestion                                                                                          |
+| Stats               | `stats.ts`                           | `asm stats` / `stats repo` / `stats author` / `stats index`; splits into `stats-tokens.ts`, `stats-index.ts`                                         |
+| Verifier            | `verifier.ts`                        | Catalog skill verification badge criteria                                                                                                            |
+| Security Auditor    | `security-auditor.ts`                | `asm audit security` — pre-install risk scanning; splits into `security-auditor-scan.ts`, `security-auditor-report.ts`                               |
+| Dependency Leases   | `dependency-leases.ts`               | Cross-session dependency borrow/lease ops; lock+session store in `dependency-leases-store.ts`                                                        |
+| Logger              | `logger.ts`                          | Shared structured logging                                                                                                                            |
+| Acknowledgements    | `website/data/acknowledgements.json` | Contributors/dependencies data for README/website                                                                                                    |
 
 ## Evaluation Framework (`src/eval/`)
 

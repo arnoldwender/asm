@@ -1,3 +1,16 @@
+## v2.22.0 — 2026-10-11
+
+### Features
+
+- Add fuzzy, location-aware search for installed skills: `asm search <query> --fuzzy` matches partial or misspelled names and description keywords in enabled tools' global skill directories and configured global custom paths; `--root <dir>` also finds project-local installs up to five levels below the chosen directory, with results ranked by match quality and showing the tool, location, and path in table, JSON, and machine-readable output; default search and the TUI are unchanged ([#735](https://github.com/luongnv89/asm/issues/735)) ([#736](https://github.com/luongnv89/asm/pull/736)) — @luongnv89
+
+### Bug Fixes
+
+- Stop the website serving stale pages after deployments: use network-first fetching for HTML and catalog data with offline cache fallback, keep cache-first fetching for bundled assets, and register the service worker only in production while clearing old registrations and ASM caches in development ([#734](https://github.com/luongnv89/asm/pull/734)) — @luongnv89
+- Refresh the website's social-preview image to show 6,700+ skills, 80+ repos, and 16 categories; previously shared cards may retain the old image until the social platform fetches it again ([#734](https://github.com/luongnv89/asm/pull/734)) — @luongnv89
+
+**Full Changelog**: https://github.com/luongnv89/asm/compare/v2.21.0...v2.22.0
+
 ## v2.21.0 — 2026-10-06
 
 ### Features

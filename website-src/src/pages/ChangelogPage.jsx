@@ -27,6 +27,39 @@ function issue(n) {
 
 const ENTRIES = [
   {
+    version: "2.22.0",
+    date: "2026-10-11",
+    sections: [
+      {
+        tag: "added",
+        items: [
+          <>
+            Find installed skills by partial names or words describing their
+            purpose with <code>asm search &lt;query&gt; --fuzzy</code>. See the
+            best matches and where they are installed. Add{" "}
+            <code>--root &lt;dir&gt;</code> to include projects up to five
+            levels below a folder you choose.
+          </>,
+        ],
+      },
+      {
+        tag: "fixed",
+        items: [
+          <>
+            Website pages and catalog data refresh after updates instead of
+            staying stuck on stale cached versions. Cached content remains
+            available when offline.
+          </>,
+          <>
+            Shared website links have an updated preview image showing 6,700+
+            skills, 80+ repositories, and 16 categories once the social platform
+            refreshes its cached preview.
+          </>,
+        ],
+      },
+    ],
+  },
+  {
     version: "2.21.0",
     date: "2026-10-06",
     sections: [

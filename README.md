@@ -742,7 +742,9 @@ asm search revew --fuzzy                         # misspelled name, global skill
 asm search "review pull requests" --root ~/work  # also projects under ~/work
 ```
 
-`--fuzzy` ranks installed skills in every tool's global skill dir by how closely the name or description matches, best match first, and shows each skill's tool and location. `--root <dir>` (implies `--fuzzy`) also searches project-local installs in projects up to 5 levels under `<dir>`. Only `<dir>` is walked.
+`--fuzzy` ranks installed skills in enabled tools' global skill directories and global custom paths by name or description match, best match first, and shows each skill's score, tool, location, and path. `--root <dir>` (implies `--fuzzy`) also searches project-local installs in `<dir>` itself and projects up to 5 levels below it. Only the explicit root is walked for projects; global skill directories are still searched.
+
+Fuzzy mode searches installed skills only: `--available` is rejected, and `--scope` and `--sort` are ignored. Tool (`-p`/`--tool`), tag, and invocability filters still apply. Use `--json` or `--machine` for structured results. Without `--fuzzy` or `--root`, search behavior is unchanged.
 
 ```bash
 asm audit --yes
