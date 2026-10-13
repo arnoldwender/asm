@@ -37,7 +37,7 @@
 
 |                     |                                                                                |
 | ------------------- | ------------------------------------------------------------------------------ |
-| **Catalog**         | 6,082 skills from 77 repos — [browse online](https://luongnv.com/asm/#/skills) |
+| **Catalog**         | 6,905 skills from 85 repos — [browse online](https://luongnv.com/asm/#/skills) |
 | **Providers**       | 21 providers (Agents, Claude Code, Pi, OpenCode, Codex, …)                     |
 | **Agent-ready CLI** | `--json`, `--yes`, `--machine` on list, search, install, audit, eval           |
 | **Security**        | Pre-install scan for shell exec, network access, credential exposure           |
@@ -822,7 +822,7 @@ asm bundle export my-workflow ./my-workflow.json
 
 **iOS/Swift catalog:** ASM indexes public Swift/Apple skill repos. Use `asm bundle install ios-release` or search for `swift`, `swiftui`, `swift testing`, `uikit`, `swiftdata`, `app store connect`.
 
-Pre-defined bundles: `frontend-dev`, `devops`, `content-writing`, `ios-release`, `marketing`, `software-dev`, `game-dev` — full list via `asm bundle list --predefined`.
+Pre-defined bundles: `frontend-dev`, `devops`, `content-writing`, `content-team`, `ios-release`, `marketing`, `software-dev`, `game-dev` — full list via `asm bundle list --predefined`.
 
 </details>
 
@@ -904,6 +904,7 @@ Local browser for skills. The CLI above is the primary interface for agents and 
 | `↑/↓` or `j/k` | Navigate list    |
 | `Enter`        | View details     |
 | `d`            | Uninstall        |
+| `l`            | Link ghost skill |
 | `/`            | Search / filter  |
 | `Esc`          | Back / clear     |
 | `Tab`          | Cycle scope      |
@@ -913,6 +914,8 @@ Local browser for skills. The CLI above is the primary interface for agents and 
 | `a`            | Audit duplicates |
 | `q`            | Quit             |
 | `?`            | Help             |
+
+In the Global and Project tabs, ASM library skills that are not installed in that scope appear as dimmed `·` ghost rows after the installed skills. Press `l` on a ghost, in the list or its detail view, to pick an enabled tool and link the skill into it.
 
 </details>
 

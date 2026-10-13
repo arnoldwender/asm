@@ -27,6 +27,57 @@ function issue(n) {
 
 const ENTRIES = [
   {
+    version: "2.23.0",
+    date: "2026-10-13",
+    sections: [
+      {
+        tag: "added",
+        items: [
+          <>
+            See every skill in your ASM library from the interactive terminal
+            app (run <code>asm</code> with no arguments). Skills you have not
+            installed in the current scope appear as dimmed rows in the Global
+            and Project tabs, and pressing <code>l</code> on one links it into
+            the tool you choose.
+          </>,
+          <>
+            Set up a content workflow in one step with{" "}
+            <code>asm bundle install content-team</code>, which installs 23
+            skills for topic research, writing, visuals, video, sound, and
+            social publishing. Set approval rules in your agent before you let
+            it schedule or post.
+          </>,
+          <>
+            Browse 36 more skills from four new catalog sources, covering
+            article illustrations, cover images, and infographics, editing
+            videos with your coding agent, ElevenLabs speech, sound effects, and
+            music, and scheduling social posts with Postiz.
+          </>,
+        ],
+      },
+      {
+        tag: "changed",
+        items: [
+          <>
+            The skill catalog now lists more than 6,900 skills from 85
+            repositories, with the latest updates from every indexed source.
+          </>,
+        ],
+      },
+      {
+        tag: "fixed",
+        items: [
+          <>
+            Skill pages on the website retry automatically when their details
+            fail to load. If loading still fails, they explain what went wrong
+            and offer a Try again button instead of showing &quot;Failed to
+            fetch&quot;.
+          </>,
+        ],
+      },
+    ],
+  },
+  {
     version: "2.22.0",
     date: "2026-10-11",
     sections: [

@@ -65,11 +65,14 @@ stateDiagram-v2
     Dashboard --> Config: c
     Dashboard --> Help: ?
     Dashboard --> Duplicates: a
+    Dashboard --> Link: l (ghost row)
     SkillDetail --> Dashboard: Esc
+    SkillDetail --> Link: l (ghost)
     Confirm --> Dashboard: Esc / confirm
     Config --> Dashboard: Esc
     Help --> Dashboard: Esc
     Duplicates --> Dashboard: Esc
+    Link --> Dashboard: Esc / select
 ```
 
 ### Views (`src/views/`)
@@ -82,6 +85,7 @@ Each view is an ink/React component:
 | Skill List   | `skill-list.tsx`   | Scrollable, selectable list of discovered skills     |
 | Skill Detail | `skill-detail.tsx` | Overlay showing full skill metadata                  |
 | Confirm      | `confirm.tsx`      | Uninstall confirmation dialog with removal plan      |
+| Link Modal   | `link-modal.tsx`   | Tool picker that links a library ghost skill         |
 | Duplicates   | `duplicates.tsx`   | Two-phase audit overlay (groups → instance picker)   |
 | Config       | `config.tsx`       | Provider toggle UI                                   |
 | Help         | `help.tsx`         | Keyboard shortcut overlay                            |
@@ -107,6 +111,7 @@ Each view is an ink/React component:
 | Skill Index         | `skill-index.ts` / `ingester.ts`     | Catalog ingestion, search, and `asm index` subcommands                                                                                               |
 | Repo Bundles        | `repo-bundles.ts`                    | Bundle inference/records derived from indexed repos                                                                                                  |
 | Library             | `library.ts`                         | Local library lifecycle (`install --library`, `activate`, `deactivate`)                                                                              |
+| Ghost Skills        | `ghost-skills.ts`                    | TUI library ghosts: library skills not installed in the listed scope, with display fields read from the library copy's SKILL.md                      |
 | Skill State         | `skill-state.ts`                     | Disable/enable state persisted to `skill-state.json`                                                                                                 |
 | Skill Tags          | `skill-tags.ts`                      | Local tag overlays (`asm tag add\|remove`) and `--tag` AND filters                                                                                   |
 | Importer / Exporter | `importer.ts` / `exporter.ts`        | `asm import` / `asm export`                                                                                                                          |

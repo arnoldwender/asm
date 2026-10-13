@@ -171,45 +171,50 @@ function FeaturedSkills({ skills }) {
   );
 }
 
-/* ─── What's New (v2.22.0) ─────────────────────────────────────────── */
+/* ─── What's New (v2.23.0) ─────────────────────────────────────────── */
 
 function WhatsNew() {
   const highlights = [
     {
       tag: "New",
-      head: "Find installed skills without the exact name",
-      body: "Opt in with asm search <query> --fuzzy to match partial names and descriptions, see the best matches and their locations, or add --root <dir> to include projects up to five levels below that folder.",
+      head: "Your whole library in the TUI",
+      body: "Run asm with no arguments: library skills you have not installed in the current scope show as dimmed rows in the Global and Project tabs. Press l on one to link it into the tool you choose.",
+    },
+    {
+      tag: "New",
+      head: "A content team in one bundle",
+      body: "asm bundle install content-team installs 23 skills for topic research, writing, visuals, video, sound, and social publishing. Set approval rules in your agent before you let it schedule or post.",
+    },
+    {
+      tag: "Growing",
+      head: "6,900+ skills from 85 repos",
+      body: "Four new sources add 36 skills for article illustrations, cover images, infographics, video editing, ElevenLabs speech, sound effects, music, and Postiz social scheduling. Every indexed source is refreshed.",
     },
     {
       tag: "Fixed",
-      head: "Fresh pages after website updates",
-      body: "Website pages and catalog data refresh after updates instead of showing stale cached versions. Cached content is still available when offline.",
-    },
-    {
-      tag: "Fixed",
-      head: "Updated previews for shared links",
-      body: "The website preview image now shows 6,700+ skills, 80+ repositories, and 16 categories once the social platform refreshes its cached preview.",
+      head: "Skill pages that recover on their own",
+      body: "Skill pages on the website retry automatically when their details fail to load. If loading still fails, they explain what went wrong and offer a Try again button.",
     },
   ];
   return (
     <Reveal
       as="section"
       className="flex flex-col gap-8"
-      aria-label="What's new in v2.22.0"
+      aria-label="What's new in v2.23.0"
     >
       <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div className="flex flex-col gap-3 max-w-[680px]">
           <span className="lp-kicker">
             <span className="dot" aria-hidden="true" />
-            what&apos;s new · v2.22.0
+            what&apos;s new · v2.23.0
           </span>
           <h2 className="lp-section-title">
-            Find installed skills. Get fresh website pages.
+            Your library in the TUI. A content team in one bundle.
           </h2>
           <p className="lp-lede">
-            v2.22.0 adds opt-in fuzzy search for installed skills in the CLI,
-            refreshes cached website pages after updates, and updates the
-            preview image for shared links.
+            v2.23.0 shows uninstalled library skills in the TUI and links them
+            with one key, adds a content-team bundle and four new catalog
+            sources, and makes website skill pages retry when loading fails.
           </p>
         </div>
         <Link
@@ -504,6 +509,11 @@ function Solution() {
       icon: "07",
       head: "Find installed skills by name or purpose",
       body: "Opt in with asm search <query> --fuzzy to rank installed skills by partial names and descriptions, with their tool and location. Add --root <dir> to include projects up to five levels below a folder you choose.",
+    },
+    {
+      icon: "08",
+      head: "Link library skills from the TUI",
+      body: "Library skills you have not installed in the current scope appear as dimmed rows in the TUI's Global and Project tabs. Press l on one to link it into the tool you choose, no command to remember.",
     },
   ];
   return (

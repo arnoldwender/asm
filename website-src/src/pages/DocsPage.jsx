@@ -1234,17 +1234,17 @@ asm import skills.json -s global    # Import only global skills`}</CodeBlock>
             </tbody>
           </table>
           <p>
-            ASM ships with seven pre-defined bundles — <code>frontend-dev</code>
+            ASM ships with eight pre-defined bundles — <code>frontend-dev</code>
             , <code>devops</code>, <code>content-writing</code>,{" "}
             <code>ios-release</code>, <code>marketing</code>,{" "}
-            <code>software-dev</code>, and <code>game-dev</code> — installed by
-            name with <code>asm bundle install &lt;name&gt;</code>. In a
-            terminal, <code>bundle install</code> prompts for the target
-            tool(s), the bundle skills to install, and the scope; pass the
-            prompt&apos;s own flag to skip it (<code>-p/--tool</code>,{" "}
-            <code>-s/--scope</code>, <code>-y/--yes</code>). Outside a terminal,{" "}
-            <code>-p/--tool</code> is required unless exactly one tool is
-            enabled.
+            <code>software-dev</code>, <code>game-dev</code>, and{" "}
+            <code>content-team</code> — installed by name with{" "}
+            <code>asm bundle install &lt;name&gt;</code>. In a terminal,{" "}
+            <code>bundle install</code> prompts for the target tool(s), the
+            bundle skills to install, and the scope; pass the prompt&apos;s own
+            flag to skip it (<code>-p/--tool</code>, <code>-s/--scope</code>,{" "}
+            <code>-y/--yes</code>). Outside a terminal, <code>-p/--tool</code>{" "}
+            is required unless exactly one tool is enabled.
           </p>
           <h3>Flags</h3>
           <FlagTable
@@ -1722,6 +1722,7 @@ asm publish --yes ./my-skill      # skip confirmation (CI)`}</CodeBlock>
               <KeyRow k="↑/↓ or j/k" a="Navigate skill list" />
               <KeyRow k="Enter" a="View skill details" />
               <KeyRow k="d" a="Uninstall selected skill" />
+              <KeyRow k="l" a="Link a dimmed library skill into a tool" />
               <KeyRow k="/" a="Search / filter skills" />
               <KeyRow k="Esc" a="Back / clear filter / close dialog" />
               <KeyRow k="Tab" a="Cycle scope: Global → Project → Both" />

@@ -1,3 +1,25 @@
+## v2.23.0 — 2026-10-13
+
+### Features
+
+- Add the predefined `content-team` bundle — 23 skills from nine indexed repos covering topic research, writing, visuals, video, sound, and publishing — installable with `asm bundle install content-team`; the `baoyu-post-to-*` skills are left out so publishing goes through `postiz`, and approval requirements must be configured in your agent before it schedules or posts ([#740](https://github.com/luongnv89/asm/issues/740)) ([#739](https://github.com/luongnv89/asm/pull/739)) — @luongnv89
+- Add `JimLiu/baoyu-skills` (22 skills), `browser-use/video-use` (2 skills), `elevenlabs/skills` (11 skills), and `gitroomhq/postiz-agent` (1 skill) to the curated skill index — 36 skills for article illustrations, cover images, infographics, and slide decks; editing videos with coding agents; building with ElevenLabs, including text-to-speech, sound effects, and music; and scheduling social posts with Postiz ([#740](https://github.com/luongnv89/asm/issues/740)) ([#739](https://github.com/luongnv89/asm/pull/739)) — @luongnv89
+- Show ASM library skills that are not installed in the current scope as dimmed `·` "ghost" rows in the TUI's Global and Project tabs: ghosts are listed after installed skills with the description, creator, effort, invocability, and token count read from the library copy's `SKILL.md`, and pressing `l` on one, in the list or its detail view, opens a picker of enabled tools that symlinks the skill into the chosen tool's skill directory for that scope, then rescans so the row becomes an installed skill; the help view and footer document `l` and the `·` legend, ghosts are excluded from uninstall and from the header counts, and the Both tab is unchanged ([#741](https://github.com/luongnv89/asm/issues/741)) ([#727](https://github.com/luongnv89/asm/pull/727)) — @hheei
+
+### Bug Fixes
+
+- Retry failed skill detail loads on the website and show a clear error: network errors and HTTP 5xx/408/429 responses are retried up to twice with a 500 ms then 1500 ms backoff (404s and unreadable JSON are not retried), and a persistent failure now shows a plain-language alert with a **Try again** button instead of the raw "Could not load full details: Failed to fetch" text, while the summary and install command stay usable ([#737](https://github.com/luongnv89/asm/issues/737)) ([#738](https://github.com/luongnv89/asm/pull/738)) — @luongnv89
+
+### Chores
+
+- Refresh indexed skill sources — re-ingested all enabled repos in `data/skill-index-resources.json` (44 updated, 41 unchanged, 0 failed, 0 skipped); with the four new repos the catalog grows from 81 repos / 6,790 skills to 85 repos / 6,905 skills, and `santifer/career-ops` drops 5 skills removed upstream ([#742](https://github.com/luongnv89/asm/pull/742)) — @luongnv89
+
+### New Contributors
+
+- @hheei (Lo Chon Hei) made their first contribution in [#727](https://github.com/luongnv89/asm/pull/727)
+
+**Full Changelog**: https://github.com/luongnv89/asm/compare/v2.22.0...v2.23.0
+
 ## v2.22.0 — 2026-10-11
 
 ### Features
