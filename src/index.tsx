@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { render, Box, Text, useApp, useInput, useStdout } from "ink";
 import { Spinner } from "@inkjs/ui";
 import type {
@@ -9,6 +15,7 @@ import type {
   AppConfig,
   AuditReport,
 } from "./utils/types";
+import type { LibrarySkillInfo } from "./library-core";
 import { loadConfig, saveConfig, getConfigPath } from "./config";
 import { scanAllSkills, searchSkills, sortSkills } from "./scanner";
 import {
@@ -18,6 +25,13 @@ import {
   getExistingTargets,
 } from "./uninstaller";
 import { detectDuplicates } from "./auditor";
+import { activateLibrarySkill, listLibrarySkills } from "./library";
+import { buildGhostSkills } from "./ghost-skills";
+import {
+  buildLinkOptions,
+  LinkModal,
+  type LinkTargetOption,
+} from "./views/link-modal";
 import { DashboardFooter, DashboardHeader } from "./views/dashboard";
 import { SkillListView } from "./views/skill-list";
 import { SkillDetailView } from "./views/skill-detail";
@@ -53,7 +67,6 @@ export function App({ initialConfig }: AppProps) {
   const termHeight = stdout.rows ?? 24;
 
   const [config, setConfig] = useState<AppConfig>(initialConfig);
-  const [allSkills, setAllSkills] = useState<SkillInfo[]>([]);
   const [scope, setScope] = useState<Scope>(
     initialConfig.preferences.defaultScope,
   );
@@ -68,17 +81,55 @@ export function App({ initialConfig }: AppProps) {
   const [confirmTargets, setConfirmTargets] = useState<string[]>([]);
   const [confirmSkill, setConfirmSkill] = useState<SkillInfo | null>(null);
   const [auditReport, setAuditReport] = useState<AuditReport>(EMPTY_AUDIT);
+  const [installedSkills, setInstalledSkills] = useState<SkillInfo[]>([]);
+  const [ghostSkills, setGhostSkills] = useState<SkillInfo[]>([]);
+  const [linkSkill, setLinkSkill] = useState<SkillInfo | null>(null);
 
-  // ── TUI state: loading, error, refresh feedback ─────────────────────────
+  // ── TUI state: loading, error banner, feedback flash ────────────────────
+  const scanGenRef = useRef(0);
   const [scanning, setScanning] = useState(false);
-  const [scanError, setScanError] = useState<string | null>(null);
-  const [refreshFeedback, setRefreshFeedback] = useState(false);
+  const [bannerError, setBannerError] = useState<{
+    title: string;
+    message: string;
+  } | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const [hasScanned, setHasScanned] = useState(false);
 
+  const isMountedRef = useRef(true);
+  const flashTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const flash = useCallback((msg: string, durationMs = 1200) => {
+    if (!isMountedRef.current) return;
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    setFeedback(msg);
+    flashTimerRef.current = setTimeout(() => {
+      if (isMountedRef.current) setFeedback(null);
+      flashTimerRef.current = null;
+    }, durationMs);
+  }, []);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    };
+  }, []);
+
+  const allSkills = useMemo(
+    () => [...installedSkills, ...ghostSkills],
+    [installedSkills, ghostSkills],
+  );
+
   // ── Derive filtered list ────────────────────────────────────────────────
+  // Installed skills first, library ghosts grouped after them; each group
+  // keeps the user's chosen sort order.
   const filteredSkills = useMemo(() => {
     const searched = searchSkills(allSkills, searchQuery);
-    return sortSkills(searched, sort);
+    const sorted = sortSkills(searched, sort);
+    return [
+      ...sorted.filter((s) => !s.isGhost),
+      ...sorted.filter((s) => s.isGhost),
+    ];
   }, [allSkills, searchQuery, sort]);
 
   // Keep cursor in bounds
@@ -91,17 +142,36 @@ export function App({ initialConfig }: AppProps) {
 
   // ── Initial + scope change scan ─────────────────────────────────────────
   const refreshSkills = useCallback(async () => {
+    const gen = ++scanGenRef.current;
     setScanning(true);
-    setScanError(null);
     try {
-      const skills = await scanAllSkills(config, scope);
-      setAllSkills(skills);
+      const [skills, library] = await Promise.all([
+        scanAllSkills(config, scope),
+        scope === "both"
+          ? Promise.resolve([] as LibrarySkillInfo[])
+          : listLibrarySkills().catch(() => [] as LibrarySkillInfo[]),
+      ]);
+      if (gen !== scanGenRef.current) return;
+      const ghosts = await buildGhostSkills(library, skills, scope);
+      if (gen !== scanGenRef.current) return;
+      setInstalledSkills(skills);
+      setGhostSkills(ghosts);
       setAuditReport(detectDuplicates(skills));
       setHasScanned(true);
+      setBannerError((prev) => (prev?.title === "Scan failed" ? null : prev));
     } catch (err) {
-      setScanError(err instanceof Error ? err.message : String(err));
+      if (gen !== scanGenRef.current) return;
+      setInstalledSkills([]);
+      setGhostSkills([]);
+      setAuditReport(EMPTY_AUDIT);
+      setBannerError({
+        title: "Scan failed",
+        message: err instanceof Error ? err.message : String(err),
+      });
     } finally {
-      setScanning(false);
+      if (isMountedRef.current && gen === scanGenRef.current) {
+        setScanning(false);
+      }
     }
   }, [config, scope]);
 
@@ -130,13 +200,14 @@ export function App({ initialConfig }: AppProps) {
 
   const showConfirm = useCallback(
     async (skill: SkillInfo) => {
-      const plan = buildFullRemovalPlan(skill.dirName, allSkills, config);
+      if (skill.isGhost) return;
+      const plan = buildFullRemovalPlan(skill.dirName, installedSkills, config);
       const targets = await getExistingTargets(plan);
       setConfirmSkill(skill);
       setConfirmTargets(targets);
       setView("confirm");
     },
-    [allSkills, config],
+    [installedSkills, config],
   );
 
   const handleConfirmResult = useCallback(
@@ -151,7 +222,7 @@ export function App({ initialConfig }: AppProps) {
       }
       const plan = buildFullRemovalPlan(
         confirmSkill.dirName,
-        allSkills,
+        installedSkills,
         config,
       );
       await executeRemoval(plan);
@@ -160,8 +231,55 @@ export function App({ initialConfig }: AppProps) {
       setView("dashboard");
       await refreshSkills();
     },
-    [allSkills, config, confirmSkill, refreshSkills],
+    [installedSkills, config, confirmSkill, refreshSkills],
   );
+
+  const showLink = useCallback(
+    (skill?: SkillInfo) => {
+      if (scope !== "project" && scope !== "global") return;
+      const target = skill ?? filteredSkills[cursor];
+      if (target?.isGhost) {
+        setLinkSkill(target);
+        setView("link");
+      }
+    },
+    [cursor, filteredSkills, scope],
+  );
+
+  const handleLinkSelect = useCallback(
+    async (option: LinkTargetOption) => {
+      if (!linkSkill) return;
+      const targetSkill = linkSkill;
+      try {
+        await activateLibrarySkill({
+          libraryPath: targetSkill.path,
+          targetDir: option.targetDir,
+          activationName: targetSkill.dirName,
+          force: false,
+        });
+        if (!isMountedRef.current) return;
+        setBannerError((prev) => (prev?.title === "Link failed" ? null : prev));
+        flash("Linked!");
+        setLinkSkill(null);
+        setView("dashboard");
+        await refreshSkills();
+      } catch (err) {
+        if (!isMountedRef.current) return;
+        setBannerError({
+          title: "Link failed",
+          message: err instanceof Error ? err.message : String(err),
+        });
+        setLinkSkill(null);
+        setView("dashboard");
+      }
+    },
+    [flash, linkSkill, refreshSkills],
+  );
+
+  const handleLinkCancel = useCallback(() => {
+    setLinkSkill(null);
+    setView("dashboard");
+  }, []);
 
   const handleConfigClose = useCallback(async (updatedConfig: AppConfig) => {
     await saveConfig(updatedConfig);
@@ -239,7 +357,12 @@ export function App({ initialConfig }: AppProps) {
       }
 
       if (key.escape) {
-        if (view === "help" || view === "detail" || view === "confirm") {
+        if (
+          view === "help" ||
+          view === "detail" ||
+          view === "confirm" ||
+          view === "link"
+        ) {
           setView("dashboard");
           return;
         }
@@ -267,9 +390,7 @@ export function App({ initialConfig }: AppProps) {
         }
         if (input === "r" && !key.ctrl) {
           refreshSkills();
-          // Brief flash: "Updated!" feedback
-          setRefreshFeedback(true);
-          setTimeout(() => setRefreshFeedback(false), 1200);
+          flash("Updated!", 1000);
           return;
         }
         if (input === "c" && !key.ctrl) {
@@ -287,6 +408,10 @@ export function App({ initialConfig }: AppProps) {
         if (input === "d") {
           const skill = filteredSkills[cursor];
           if (skill) showConfirm(skill);
+          return;
+        }
+        if (input === "l") {
+          showLink();
           return;
         }
         if (key.upArrow) {
@@ -325,6 +450,10 @@ export function App({ initialConfig }: AppProps) {
           if (selectedSkill) showConfirm(selectedSkill);
           return;
         }
+        if (input === "l" && selectedSkill?.isGhost) {
+          showLink(selectedSkill);
+          return;
+        }
       }
     },
     // config and audit views own their own keyboard handling; leave confirm
@@ -335,8 +464,8 @@ export function App({ initialConfig }: AppProps) {
 
   // ── Compute visible skill-list height (rough heuristic) ─────────────────
   // Dashboard chrome (banner 6 + stats 3 + tabs 1 + search 3 + footer 1) ≈ 14
-  const chromeRows = 14;
-  const visibleListRows = Math.max(5, termHeight - chromeRows - 4);
+  const chromeRows = 14 + (bannerError ? 4 : 0);
+  const visibleListRows = Math.max(2, termHeight - chromeRows - 4);
 
   return (
     <Box flexDirection="column" width={termWidth} height={termHeight}>
@@ -353,23 +482,21 @@ export function App({ initialConfig }: AppProps) {
               <Spinner label="Scanning skills..." />
             </Box>
           )}
-          {scanError && (
+          {bannerError && (
             <Box
               flexDirection="column"
               borderStyle="round"
               borderColor={theme.red}
               paddingX={1}
-              paddingY={1}
             >
               <Text color={theme.red} bold>
-                Scan failed
+                {bannerError.title}: {bannerError.message}
               </Text>
-              <Text color={theme.red}>{scanError}</Text>
             </Box>
           )}
           <DashboardHeader
             config={config}
-            skills={allSkills}
+            skills={installedSkills}
             duplicateCount={auditReport.duplicateGroups.length}
             sort={sort}
             scope={scope}
@@ -390,7 +517,7 @@ export function App({ initialConfig }: AppProps) {
             searchQuery={searchQuery}
           />
           <DashboardFooter
-            refreshFeedback={refreshFeedback}
+            feedback={feedback}
             scanning={scanning}
             hasScanned={hasScanned}
           />
@@ -420,6 +547,18 @@ export function App({ initialConfig }: AppProps) {
           report={auditReport}
           onRemove={handleDuplicatesRemove}
           onClose={() => setView("dashboard")}
+        />
+      )}
+      {view === "link" && linkSkill && (
+        <LinkModal
+          skillName={linkSkill.name}
+          scope={scope === "both" ? "project" : scope}
+          options={buildLinkOptions(
+            config.providers,
+            scope === "both" ? "project" : scope,
+          )}
+          onSelect={handleLinkSelect}
+          onCancel={handleLinkCancel}
         />
       )}
     </Box>
